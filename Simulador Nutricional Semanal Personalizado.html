@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Nutricional Avanzado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .form-container {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-calculate:active {
+            transform: translateY(-1px);
+        }
+
+        .results-container {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .results-header h2 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .objetivo-badge {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .objetivo-bajar {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .objetivo-mantener {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .objetivo-subir {
+            background: linear-gradient(135deg, #45b7d1, #96c93d);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-container {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .menu-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .menu-header h2 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .day-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .day-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .meal {
+            margin-bottom: 1rem;
+        }
+
+        .meal-name {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meal-content {
+            color: #666;
+            line-height: 1.4;
+            padding-left: 0.5rem;
+            border-left: 2px solid #f0f0f0;
+        }
+
+        .recommendations {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            color: white;
+        }
+
+        .recommendations h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .food-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .food-category {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .category-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .food-list {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .form-container, .results-container, .menu-container {
+                padding: 1.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🥗 Simulador Nutricional Avanzado</h1>
+            <p class="subtitle">Planifica tu alimentación personalizada para alcanzar tus objetivos</p>
+        </div>
+
+        <div class="form-container">
+            <form id="nutriForm" onsubmit="return false;">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="edad">🎂 Edad</label>
+                        <input type="number" id="edad" min="10" max="90" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sexo">👤 Sexo</label>
+                        <select id="sexo" required>
+                            <option value="">Selecciona...</option>
+                            <option value="hombre">Hombre</option>
+                            <option value="mujer">Mujer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="altura">📏 Altura (cm)</label>
+                        <input type="number" id="altura" min="100" max="230" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="peso">⚖️ Peso actual (kg)</label>
+                        <input type="number" id="peso" min="30" max="200" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="actividad">🏃‍♂️ Actividad física</label>
+                        <select id="actividad" required>
+                            <option value="">Selecciona...</option>
+                            <option value="sedentario">Sedentario (poco/sin ejercicio)</option>
+                            <option value="ligero">Ligero (1-3 días/semana)</option>
+                            <option value="moderado">Moderado (3-5 días/semana)</option>
+                            <option value="intenso">Intenso (6-7 días/semana)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="objetivo">🎯 Objetivo</label>
+                        <select id="objetivo" required>
+                            <option value="">Selecciona...</option>
+                            <option value="bajar">Bajar de peso</option>
+                            <option value="mantener">Mantener peso</option>
+                            <option value="subir">Subir masa muscular</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn-calculate" onclick="calcular()">
+                        ✨ Calcular Plan Nutricional
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="results-container hidden" id="results">
+            <div class="results-header">
+                <h2>📊 Tu Plan Personalizado</h2>
+                <div class="objetivo-badge" id="objetivoBadge"></div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="pesoIdeal">0</div>
+                    <div class="stat-label">Peso Ideal (kg)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="calorias">0</div>
+                    <div class="stat-label">Calorías Diarias</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="proteina">0</div>
+                    <div class="stat-label">Proteína (g)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="carbohidratos">0</div>
+                    <div class="stat-label">Carbohidratos (g)</div>
+                </div>
+            </div>
+
+            <div class="recommendations" id="recommendations">
+                <h3>🍎 Alimentos Recomendados para tu Objetivo</h3>
+                <div class="food-categories" id="foodCategories"></div>
+            </div>
+        </div>
+
+        <div class="menu-container hidden" id="menuSemana">
+            <div class="menu-header">
+                <h2>🗓️ Menú Semanal Personalizado</h2>
+                <p style="color: #666; margin-top: 0.5rem;">Plan de comidas diseñado específicamente para tu objetivo</p>
+            </div>
+            <div class="menu-grid" id="menuCards"></div>
+        </div>
+    </div>
+
+    <script>
+        // Platos base para mantener peso
+        const platos = {
+            desayuno: [
+                "🥣 Avena con plátano y nueces",
+                "🍞 Tostadas integrales con aguacate y huevo",
+                "🥛 Yogur con frutos rojos y granola",
+                "🍳 Omelette de espinaca y tomate",
+                "🥪 Pan integral con pavo y queso fresco",
+                "🥤 Smoothie de frutas y semillas",
+                "🫓 Arepa integral con queso bajo en grasa"
+            ],
+            almuerzo: [
+                "🍗 Pollo asado con arroz integral y ensalada",
+                "🐟 Salmón a la plancha con quinoa y verduras",
+                "🥗 Ensalada de atún con legumbres",
+                "🥩 Ternera guisada con patatas y zanahoria",
+                "🍝 Pasta integral con tomate y pollo",
+                "🫘 Lentejas estofadas con verduras",
+                "🐠 Pescado al horno con batata y brócoli"
+            ],
+            cena: [
+                "🍳 Tortilla de verduras y ensalada",
+                "🍲 Sopa de verduras y pechuga de pollo",
+                "🥗 Ensalada de garbanzos y tomate",
+                "🧀 Queso fresco con tomate y nueces",
+                "🥬 Verduras salteadas con huevo",
+                "🦃 Pechuga de pavo con puré de calabaza",
+                "🥒 Crema de calabacín y atún"
+            ]
+        };
+
+        // Menú para subir masa muscular (más proteínas y calorías)
+        const platosSubir = {
+            desayuno: [
+                "🥜 Pan integral con mantequilla de cacahuete y plátano",
+                "🍳 Tortilla de 3 huevos y avena con frutos secos",
+                "🥛 Yogur griego con granola, miel y semillas",
+                "💪 Batido de proteína con fruta y tostadas",
+                "🥪 Tostadas con queso cottage y pechuga de pavo",
+                "🥞 Pancakes integrales con frutos rojos",
+                "🥣 Gachas de avena con leche y nueces"
+            ],
+            almuerzo: [
+                "🍗 Pechuga de pollo a la plancha con pasta integral",
+                "🥩 Ternera salteada con arroz y brócoli",
+                "🐟 Salmón al horno con batata y ensalada",
+                "🍲 Bowl de quinoa, huevo y garbanzos",
+                "🍝 Pasta con atún, tomate y aceite de oliva",
+                "🫘 Lentejas con arroz y huevo",
+                "🌯 Burrito de pollo, arroz y frijoles"
+            ],
+            cena: [
+                "🍳 Tortilla de atún y espinaca con pan integral",
+                "🥘 Wok de pollo y verduras con arroz",
+                "🥗 Ensalada de garbanzos con huevo y aguacate",
+                "🦃 Pavo a la plancha con puré de papas",
+                "🥘 Tofu salteado con verduras y quinoa",
+                "🥪 Sándwich de pollo, tomate y espinaca",
+                "🐟 Salmón ahumado con queso fresco y pan integral"
+            ]
+        };
+
+        // Menú para bajar de peso (menos calorías, más verduras)
+        const platosBajar = {
+            desayuno: [
+                "🥛 Yogur descremado con manzana y chía",
+                "🍞 Tostadas integrales con tomate y pavo bajo en grasa",
+                "🥣 Avena con frutos rojos y semillas",
+                "🥤 Batido verde de espinaca, pepino y manzana",
+                "🍳 Tortilla de claras y tomate",
+                "🧀 Queso fresco con fruta",
+                "☕ Café con leche descremada y fruta"
+            ],
+            almuerzo: [
+                "🍗 Pollo a la plancha con ensalada variada",
+                "🐟 Merluza al vapor con verduras",
+                "🥗 Ensalada de atún y legumbres",
+                "🦃 Pechuga de pavo con brócoli y zanahoria",
+                "🍳 Tortilla de verduras y ensalada",
+                "🍲 Sopa de verduras y carne magra",
+                "🥗 Ensalada de pollo, tomate y espinaca"
+            ],
+            cena: [
+                "🍲 Crema de verduras y huevo duro",
+                "🍲 Sopa ligera de pollo y verduras",
+                "🥗 Ensalada de garbanzos y tomate",
+                "🧀 Queso fresco con tomate y nueces",
+                "🥬 Verduras al vapor con pescado blanco",
+                "🦃 Pechuga de pavo con ensalada",
+                "🍳 Tortilla francesa con espinaca"
+            ]
+        };
+
+        // Alimentos recomendados por objetivo
+        const alimentosRecomendados = {
+            bajar: {
+                "Proteínas Magras": "Pechuga de pollo, pescado blanco, pavo, claras de huevo, tofu, queso cottage bajo en grasa",
+                "Vegetales": "Espinaca, brócoli, coliflor, pepino, tomate, lechuga, apio, calabacín, berenjena",
+                "Frutas Bajas en Azúcar": "Fresas, arándanos, manzana, pera, kiwi, pomelo, limón",
+                "Carbohidratos Complejos": "Avena integral, quinoa, arroz integral (porciones pequeñas), batata",
+                "Grasas Saludables": "Aguacate (1/4), nueces (10 unidades), aceite de oliva (1 cucharada), semillas de chía"
+            },
+            mantener: {
+                "Proteínas Completas": "Pollo, pescado, carne magra, huevos, legumbres, yogur griego, quesos frescos",
+                "Vegetales Variados": "Espinaca, brócoli, zanahoria, tomate, pimientos, calabaza, cebolla, ajo",
+                "Frutas Equilibradas": "Plátano, manzana, naranja, fresas, uvas, melón, piña, mango",
+                "Carbohidratos Integrales": "Arroz integral, pasta integral, pan integral, avena, quinoa, batata",
+                "Grasas Esenciales": "Aceite de oliva, frutos secos, aguacate, semillas, pescado graso"
+            },
+            subir: {
+                "Proteínas de Alto Valor": "Pollo, ternera, salmón, atún, huevos enteros, yogur griego, proteína en polvo",
+                "Carbohidratos Energéticos": "Arroz, pasta, avena, pan integral, batata, plátano, dátiles",
+                "Grasas Calóricas": "Frutos secos, mantequilla de cacahuete, aceite de oliva, aguacate, semillas",
+                "Lácteos Completos": "Leche entera, yogur griego, quesos curados, cottage cheese",
+                "Snacks Nutritivos": "Batidos de proteína, frutos secos, barras de cereales caseras, hummus"
+            }
+        };
+
+        // Textos de objetivos
+        const objetivoTextos = {
+            bajar: 'Bajar de peso - Déficit calórico moderado y más verduras',
+            mantener: 'Mantener peso - Alimentación equilibrada y balanceada',
+            subir: 'Subir masa muscular - Superávit calórico y más proteínas'
+        };
+
+        function calcularPesoIdeal(altura, sexo) {
+            // Fórmula de Lorentz (orientativo)
+            if (sexo === 'hombre') return Math.round((altura - 100) - ((altura - 150)/4));
+            else return Math.round((altura - 100) - ((altura - 150)/2.5));
+        }
+
+        function getFactorActividad(nivel) {
+            switch(nivel) {
+                case "sedentario": return 1.2;
+                case "ligero": return 1.375;
+                case "moderado": return 1.55;
+                case "intenso": return 1.725;
+            }
+        }
+
+        function calcularCalorias(peso, altura, edad, sexo, actividad, objetivo) {
+            // Fórmula Harris-Benedict
+            let tmb;
+            if (sexo === 'hombre') {
+                tmb = 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * edad);
+            } else {
+                tmb = 447.6 + (9.2 * peso) + (3.1 * altura) - (4.3 * edad);
+            }
+            let calorias = tmb * getFactorActividad(actividad);
+            // Ajustes según objetivo
+            if (objetivo === "bajar") calorias -= 400; // Déficit calórico
+            if (objetivo === "subir") calorias += 350; // Superávit calórico
+            return Math.round(Math.max(calorias, 1200));
+        }
+
+        function calcularProteina(pesoIdeal, objetivo) {
+            // 1.2g por kg para bajar, 1.5g para mantener, 2g para subir masa muscular
+            if (objetivo === "bajar") return Math.round(pesoIdeal * 1.2);
+            if (objetivo === "mantener") return Math.round(pesoIdeal * 1.5);
+            return Math.round(pesoIdeal * 2);
+        }
+
+        function calcularCarbohidratos(calorias, objetivo) {
+            // Menos % calorías de carbos para bajar (40%), normal para mantener (50%), más para subir (55%)
+            let porcentaje = 0.5;
+            if (objetivo === "bajar") porcentaje = 0.4;
+            if (objetivo === "subir") porcentaje = 0.55;
+            return Math.round((calorias * porcentaje) / 4);
+        }
+
+        function mostrarAlimentosRecomendados(objetivo) {
+            const categoriesDiv = document.getElementById('foodCategories');
+            categoriesDiv.innerHTML = '';
+            
+            const alimentos = alimentosRecomendados[objetivo];
+            
+            for (const [categoria, lista] of Object.entries(alimentos)) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'food-category';
+                categoryDiv.innerHTML = `
+                    <div class="category-title">${categoria}</div>
+                    <div class="food-list">${lista}</div>
+                `;
+                categoriesDiv.appendChild(categoryDiv);
+            }
+        }
+
+        function calcular() {
+            const edad = parseInt(document.getElementById('edad').value);
+            const sexo = document.getElementById('sexo').value;
+            const altura = parseInt(document.getElementById('altura').value);
+            const peso = parseFloat(document.getElementById('peso').value);
+            const actividad = document.getElementById('actividad').value;
+            const objetivo = document.getElementById('objetivo').value;
+
+            if (!edad || !sexo || !altura || !peso || !actividad || !objetivo) {
+                alert('Por favor, completa todos los campos');
+                return;
+            }
+
+            const pesoIdeal = calcularPesoIdeal(altura, sexo);
+            const calorias = calcularCalorias(peso, altura, edad, sexo, actividad, objetivo);
+            const proteina = calcularProteina(pesoIdeal, objetivo);
+            const carbohidratos = calcularCarbohidratos(calorias, objetivo);
+
+            // Mostrar badge del objetivo
+            const badge = document.getElementById('objetivoBadge');
+            badge.textContent = objetivoTextos[objetivo];
+            badge.className = `objetivo-badge objetivo-${objetivo}`;
+
+            // Mostrar estadísticas
+            document.getElementById('pesoIdeal').textContent = pesoIdeal;
+            document.getElementById('calorias').textContent = calorias;
+            document.getElementById('proteina').textContent = proteina;
+            document.getElementById('carbohidratos').textContent = carbohidratos;
+
+            // Mostrar alimentos recomendados
+            mostrarAlimentosRecomendados(objetivo);
+
+            // Mostrar resultados
+            document.getElementById('results').classList.remove('hidden');
+            mostrarMenu(objetivo);
+
+            // Scroll suave a los resultados
+            document.getElementById('results').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        function mostrarMenu(objetivo) {
+            document.getElementById('menuSemana').classList.remove('hidden');
+            const menuDiv = document.getElementById('menuCards');
+            menuDiv.innerHTML = "";
+            
+            const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+            let menu = platos;
+            
+            if (objetivo === "subir") menu = platosSubir;
+            if (objetivo === "bajar") menu = platosBajar;
+            
+            for (let i = 0; i < 7; i++) {
+                const card = document.createElement('div');
+                card.className = "day-card";
+                card.innerHTML = `
+                    <div class="day-name">${dias[i]}</div>
+                    <div class="meal">
+                        <div class="meal-name">🌅 Desayuno</div>
+                        <div class="meal-content">${menu.desayuno[i]}</div>
+                    </div>
+                    <div class="meal">
+                        <div class="meal-name">☀️ Almuerzo</div>
+                        <div class="meal-content">${menu.almuerzo[i]}</div>
+                    </div>
+                    <div class="meal">
+                        <div class="meal-name">🌙 Cena</div>
+                        <div class="meal-content">${menu.cena[i]}</div>
+                    </div>
+                `;
+                menuDiv.appendChild(card);
+            }
+        }
+    </script>
+</body>
+</html>
